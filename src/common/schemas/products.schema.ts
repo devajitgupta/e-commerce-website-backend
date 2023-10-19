@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IProductImage } from '../interfaces/image-interface';
 export type ProductsDocument = Products & Document;
 
 @Schema({ timestamps: true, collection: 'Products' })
 export class Products {
-  @Prop({ required: true, unique: false })
+  @Prop()
   title: string;
 
   @Prop({ required: true, select: false })

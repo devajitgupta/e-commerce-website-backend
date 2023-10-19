@@ -9,6 +9,17 @@ async function bootstrap() {
   dotenv.config();
   const configService = new ConfigService();
   const app = await NestFactory.create(AppModule);
+  //Middlewares
+  app.enableCors();
+  app.enableCors({
+    origin: [
+      configService.get<string>('PROD_DOMAIN'),
+      configService.get<string>('LOCAL_DOMAIN'),
+      configService.get<string>('DEV_DOMAIN'),
+    ],
+    credentials: true,
+  });
+
   // Swagger Initialization
   const config = new DocumentBuilder()
     .setTitle('E-commerce website')
@@ -19,14 +30,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  if (configService.get<string>('NODE_ENV') === 'development')
-    SwaggerModule.setup('docs', app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-      },
-    });
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
-  const port = configService.get<number>('PORT') || 3000; // Default to port 3000 if PORT is not specified in the config
+  const port = configService.get<number>('PORT') || 3001; // Default to port 3000 if PORT is not specified in the config
   await app.listen(port);
   Logger.log(`Services running at PORT ${port}`);
 }
