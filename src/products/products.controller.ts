@@ -18,8 +18,12 @@ import { CreateProductDto, UpdateProductDto } from 'src/common/dtos/products';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { response } from 'express';
 import { diskStorage } from 'multer';
+import { Response } from 'express';
+
 import { FileInterceptor } from '@nestjs/platform-express';
 import { customFilename } from 'src/common/interfaces/utils.function';
+import { ProductsDocument } from 'src/common/schemas';
+import { join } from 'path';
 
 @ApiTags('products')
 @Controller('products')
@@ -36,14 +40,14 @@ export class ProductsController {
       }),
     }),
   )
-  async uploadProductImage(@UploadedFile() file): Promise<any> {
+  async uploadProductImage(
+    @UploadedFile() image,
+    @Body() createProductDto: CreateProductDto,
+  ): Promise<ProductsDocument> {
     try {
       // Handle the uploaded file here
-      console.log('Uploaded file:', file);
-
-      // You can add your logic to save or process the file here
-
-      return { message: 'File uploaded successfully' };
+      createProductDto.image = image ? image.filename : null;
+      return this.productsService.createProduct(createProductDto);
     } catch (error) {
       return error;
     }
@@ -74,5 +78,27 @@ export class ProductsController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const result = await this.productsService.removeProduct(id);
+  }
+
+  @Get('upload/:filename')
+  async findReceipt(@Param('filename') filename: string, @Res() res: Response) {
+    try {
+      const fileBuffer = await this.productsService.getProductImage(filename);
+      if (!fileBuffer) {
+        return res.status(404).send('File not found');
+      }
+      // Set appropriate response headers based on the file type
+      res.set({
+        'Content-Type': 'application/octet-stream', // Change to the appropriate MIME type if needed
+        'Content-Length': fileBuffer.length.toString(), // Convert to string
+        'Content-Disposition': `image; filename="${filename}"`,
+      });
+      // Return the file as a buffer
+      return res.send(fileBuffer);
+    } catch (err) {
+      // Handle errors
+      console.log(err);
+      return res.status(500).send('Internal Server Error');
+    }
   }
 }

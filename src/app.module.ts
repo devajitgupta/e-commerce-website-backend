@@ -8,11 +8,16 @@ import { UserModule } from './user/user.module';
 import { ProductsModule } from './products/products.module';
 import { ProductsService } from './products/products.service';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     MulterModule.register({
       dest: 'uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Path to the static files directory
     }),
     ConfigModule.forRoot({
       envFilePath: ['.env.production', '.env.development'],

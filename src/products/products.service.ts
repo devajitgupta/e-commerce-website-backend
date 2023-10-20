@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { ProductsDocument } from 'src/common/schemas/products.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Products } from 'src/common/schemas/products.schema';
-import path from 'path';
+import * as path from 'path'; // Import the 'path' module
 import * as fs from 'fs-extra';
 import { IProductImage } from 'src/common/interfaces/image-interface';
 
@@ -44,11 +44,7 @@ export class ProductsService {
   }
 
   // for image upload
-  async getProductImage(filename: string): Promise<Buffer> {
-    const filePath = path.join(__dirname, '../', 'uploads', filename);
-    const fileBuffer = await fs.readFile(filePath);
-    return fileBuffer;
-  }
+
   async updateProductImage(
     productId: string,
     { originalname, filename, mimetype }: IProductImage,
@@ -64,5 +60,11 @@ export class ProductsService {
       },
       { new: true },
     );
+  }
+
+  async getProductImage(filename: string): Promise<Buffer> {
+    const filePath = path.join(__dirname, '../', '../', 'uploads', filename);
+    const fileBuffer = await fs.readFile(filePath);
+    return fileBuffer;
   }
 }
