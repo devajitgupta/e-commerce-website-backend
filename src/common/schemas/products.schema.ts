@@ -7,7 +7,7 @@ export class Products {
   @Prop()
   title: string;
 
-  @Prop({ required: true, select: false })
+  @Prop({ required: false })
   description: string;
 
   @Prop({ required: false })

@@ -30,7 +30,7 @@ import { join } from 'path';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post('upload')
+  @Post()
   @ApiConsumes('multipart/form-data') // Specify the content type for Swagger
   @UseInterceptors(
     FileInterceptor('image', {
@@ -45,17 +45,15 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
   ): Promise<ProductsDocument> {
     try {
-      // Handle the uploaded file here
-      createProductDto.image = image ? image.filename : null;
+      if (image) {
+        createProductDto.image = image.filename;
+      }
+      console.log(createProductDto);
+
       return this.productsService.createProduct(createProductDto);
     } catch (error) {
       return error;
     }
-  }
-
-  @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.createProduct(createProductDto);
   }
 
   @Get()
