@@ -39,10 +39,10 @@ export class UserService {
   async removeUser(id: string) {
     return await this.usersModel.findByIdAndRemove(id);
   }
-  async findOneWithPassword(username: string): Promise<UsersDocument | null> {
+  async findOneWithPassword(email: string): Promise<UsersDocument | null> {
     return await this.usersModel
-      .findOne({ username: username })
-      .select(['password', 'username']);
+      .findOne({ email: email })
+      .select(['password', 'email']);
   }
   async updatePassword(
     _id: string,
@@ -52,9 +52,9 @@ export class UserService {
     user.password = password;
     return await user.save();
   }
-  async getUserByUsername(username: string) {
+  async getUserByEmail(email: string) {
     return await this.usersModel.findOne({
-      username,
+      email,
     });
   }
 }

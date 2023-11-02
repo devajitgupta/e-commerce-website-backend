@@ -11,8 +11,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async ValidateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.findOneWithPassword(username);
+  async ValidateUser(email: string, password: string): Promise<any> {
+    const user = await this.userService.findOneWithPassword(email);
     if (user && (await this.comaprePassword(password, user.password))) {
       user.password = '';
       return user;
@@ -33,7 +33,7 @@ export class AuthService {
   }
   async createTokens(user): Promise<CreateTokensDto> {
     const payload = {
-      user: user.username,
+      user: user.email,
       sub: user._id,
     };
 

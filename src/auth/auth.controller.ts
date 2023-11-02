@@ -18,18 +18,20 @@ export class AuthController {
   @Post('login')
   async login(@Body() cardentials: LoginDto, @Req() Req) {
     let user = await this.authService.ValidateUser(
-      cardentials.username,
+      cardentials.email,
       cardentials.password,
     );
     if (!user) {
-      console.log('Invalid username or password');
+      console.log('Invalid email or password');
     }
   }
 
   @Post('signup')
   async signUp(@Body() createUserDto: SignUpDto, @Req() Req) {
-    const foundUser = await this.userService.getUserByUsername(
-      createUserDto.username,
+    console.log('JWT_SECRET:', process.env.JWT_SECRET || 'defaultSecret');
+
+    const foundUser = await this.userService.getUserByEmail(
+      createUserDto.email,
     );
     if (foundUser) {
       return error('account already exists');

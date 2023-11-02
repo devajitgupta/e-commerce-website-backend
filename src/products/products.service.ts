@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from 'src/common/dtos/products';
-import { IProduct } from 'src/common/interfaces/products.interface';
+import {
+  IFindProducts,
+  IProduct,
+} from 'src/common/interfaces/products.interface';
 import { Model } from 'mongoose';
 import { ProductsDocument } from 'src/common/schemas/products.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -27,12 +30,36 @@ export class ProductsService {
     return await this.productsModel.findByIdAndUpdate(id, updateProductDto);
   }
 
-  async getAllProducts() {
-    const ProductData = await this.productsModel.find().exec();
-    if (!ProductData || ProductData.length == 0) {
-      throw new NotFoundException('Products data not found!');
+  async findAll(
+    params: IFindProducts,
+  ): Promise<{ products: ProductsDocument[] | []; count: number }> {
+    const query = this.productsModel.find();
+    const countQuery = this.productsModel.find();
+    if (params.category) {
+      query.where('category').equals(params.category);
+      countQuery.where('category').equals(params.category);
     }
-    return ProductData;
+    if (params.ratings) {
+      query.where('ratings').equals(params.ratings);
+      countQuery.where('ratings').equals(params.ratings);
+    }
+    if (params.price) {
+      query.where('price').lte(params.price.lte);
+
+      countQuery.where('price').equals(params.price);
+    }
+    const [products, count] = await Promise.all([
+      query.exec(),
+      countQuery.countDocuments(),
+    ]);
+    // ad pagination
+    if (params.limit) {
+      query.limit(params.limit);
+    }
+    if (params.skip) {
+      query.skip(params.skip);
+    }
+    return { products, count };
   }
 
   async getProductById(id) {

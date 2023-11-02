@@ -5,17 +5,28 @@ export type UsersDocument = Users & Document;
 
 @Schema({ timestamps: true, collection: 'Users' })
 export class Users {
-  @Prop({ required: false })
-  username: string;
+  @Prop({ required: [true, 'Please Enter your Name'] })
+  name: string;
 
-  @Prop({ required: false })
+  @Prop({
+    required: [true, 'Please Enter your Email'],
+  })
+  email: string;
+
+  @Prop({
+    required: [true, 'Please Enter your Password'],
+    validate: {
+      validator: (value) => value.length >= 6,
+      message: 'Your password must be at least 6 characters',
+    },
+  })
   password: string;
 
-  @Prop({ required: false })
-  firstName: string;
+  @Prop({ required: false, default: 'user' })
+  role: string;
 
-  @Prop({ required: false })
-  lastName: string;
+  @Prop({ required: false, default: Date.now })
+  createdAt: Date;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

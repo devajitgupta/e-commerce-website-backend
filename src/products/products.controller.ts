@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -24,6 +25,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { customFilename } from 'src/common/interfaces/utils.function';
 import { ProductsDocument } from 'src/common/schemas';
 import { join } from 'path';
+import { FindQueryDto } from 'src/common/interfaces/find-query.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -57,8 +59,9 @@ export class ProductsController {
   }
 
   @Get()
-  async findAll() {
-    return this.productsService.getAllProducts();
+  async findAll(@Query() params: FindQueryDto) {
+    const { products, count } = await this.productsService.findAll(params);
+    return { products, count };
   }
 
   @Get(':id')

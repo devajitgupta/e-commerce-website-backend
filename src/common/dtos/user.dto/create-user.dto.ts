@@ -4,7 +4,11 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
-  username: string;
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  email: string;
 
   @ApiProperty()
   @IsOptional()
@@ -12,9 +16,9 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsOptional()
-  firstName: string;
+  role: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @IsOptional()
-  lastName: string;
+  createdAt: Date;
 }
