@@ -4,7 +4,7 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 export class CreateProductDto {
   @ApiProperty()
   @IsNotEmpty()
-  title: string;
+  name: string;  
 
   @ApiProperty()
   @IsOptional()
@@ -14,7 +14,7 @@ export class CreateProductDto {
   @IsOptional()
   price: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false }) 
   @IsOptional()
   category: string;
 
